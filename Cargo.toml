@@ -1,0 +1,9 @@
+[workspace]
+members = ["server", "cli", "api"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["KOZAKI Tsuneaki <kozaki.tsuneaki@gmail.com>"]
+
+[workspace.dependencies]
