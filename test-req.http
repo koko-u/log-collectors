@@ -5,6 +5,11 @@ GET http://localhost:3000/logs
 POST http://localhost:3000/logs
 Content-Type: application/json
 
+{
+    "user_agent": "Agent 1",
+    "response_time": 100
+}
+
 ### GET /csv
 GET http://localhost:3000/csv
 

@@ -3,6 +3,9 @@ use actix_web::HttpResponse;
 use actix_web::Responder;
 
 use crate::errors::AppResponseError;
+use crate::states::AppState;
+use actix_web::http;
+use api::responses::csv::CsvResponse;
 
 pub fn csv_scope(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -12,10 +15,14 @@ pub fn csv_scope(cfg: &mut web::ServiceConfig) {
     );
 }
 
-async fn post_csv() -> Result<impl Responder, AppResponseError> {
-    todo::TODO!("POST /csv"; Ok(HttpResponse::Ok().finish()))
+async fn post_csv(_app_state: web::Data<AppState>) -> Result<impl Responder, AppResponseError> {
+    let response = CsvResponse::default();
+
+    todo::TODO!("POST /csv"; Ok(HttpResponse::Ok().json(response)))
 }
 
-async fn get_csv() -> Result<impl Responder, AppResponseError> {
-    todo::TODO!("GET /csv"; Ok(HttpResponse::Ok().finish()))
+async fn get_csv(_app_state: web::Data<AppState>) -> Result<impl Responder, AppResponseError> {
+    let csv = vec![42_u8, 18_u8];
+
+    todo::TODO!("GET /csv"; Ok(HttpResponse::Ok().insert_header((http::header::CONTENT_TYPE, "text/csv")).body(csv)))
 }

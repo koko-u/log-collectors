@@ -14,6 +14,9 @@ error-stack.workspace = true
 derive_more.workspace = true
 todo.workspace = true
 dotenv.workspace = true
+chrono.workspace = true
+
+api = { path = "../api" }
 
 [dev-dependencies]
 pretty_assertions.workspace = true
