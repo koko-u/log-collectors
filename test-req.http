@@ -1,0 +1,14 @@
+### GET /logs
+GET http://localhost:3000/logs
+
+### POST /logs
+POST http://localhost:3000/logs
+Content-Type: application/json
+
+### GET /csv
+GET http://localhost:3000/csv
+
+### POST /logs
+POST http://localhost:3000/csv
+Content-Type: application/json
+
