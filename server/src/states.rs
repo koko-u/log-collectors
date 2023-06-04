@@ -4,7 +4,7 @@ use sqlx::PgPool;
 
 use crate::errors::AppError;
 
-#[derive(Debug, Clone, derive_more::Deref)]
+#[derive(Debug, Clone, derive_more::Deref, derive_more::From)]
 pub struct DbState(PgPool);
 
 impl DbState {
