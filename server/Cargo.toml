@@ -17,6 +17,7 @@ dotenv.workspace = true
 chrono.workspace = true
 sqlx.workspace = true
 uuid.workspace = true
+async-trait.workspace = true
 
 api = { path = "../api" }
 

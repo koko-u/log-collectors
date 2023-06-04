@@ -1,14 +1,18 @@
+use async_trait::async_trait;
 use chrono::DateTime;
+use chrono::SubsecRound;
 use chrono::Utc;
 use error_stack::IntoReport;
 use error_stack::ResultExt;
-use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::errors::AppError;
 use crate::models::logs::Log;
+use crate::states::DbState;
 
-pub async fn insert_log(
+use super::DbTrait;
+
+/* pub async fn insert_log(
     pool: &PgPool,
     user_agent: &str,
     response_time: i32,
@@ -133,26 +137,79 @@ impl<'a> LogGetBuilder<'a> {
         }
     }
 }
+ */
 
-/*
-           r#"
-               SELECT
-                   id,
-                   user_agent,
-                   response_time,
-                   timestamp
-               FROM
-                   logs
-               WHERE
-                   timestamp >= CASE
-                                   WHEN "$1::TIMESTAMP WITH TIME ZONE" IS NULL THEN timestamp
-                                   ELSE "$1::TIMESTAMP WITH TIME ZONE"
-                                END
-                   AND
-                   timestamp <= CASE
-                                   WHEN "$2::TIMESTAMP WITH TIME ZONE" IS NULL THEN timestamp
-                                   ELSE "$2::TIMESTAMP WITH TIME ZONE"
-                                END
-           "#,
+#[async_trait]
+impl DbTrait for DbState {
+    async fn insert_log(
+        &self,
+        user_agent: &str,
+        response_time: i32,
+        timestamp: Option<DateTime<Utc>>,
+    ) -> error_stack::Result<Log, AppError> {
+        let mut conn = self
+            .acquire()
+            .await
+            .into_report()
+            .change_context(AppError)?;
 
-*/
+        let id = Uuid::new_v4();
+        let timestamp = timestamp.unwrap_or_else(|| Utc::now().trunc_subsecs(0));
+
+        let new_log = sqlx::query_as!(
+            Log,
+            r#"
+            INSERT INTO logs (id, user_agent, response_time, timestamp)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, user_agent, response_time, timestamp
+            "#,
+            id,
+            user_agent,
+            response_time,
+            timestamp
+        )
+        .fetch_one(&mut conn)
+        .await
+        .into_report()
+        .change_context(AppError)?;
+
+        Ok(new_log)
+    }
+
+    async fn get_logs(
+        &self,
+        from: Option<DateTime<Utc>>,
+        until: Option<DateTime<Utc>>,
+    ) -> error_stack::Result<Vec<Log>, AppError> {
+        let mut conn = self
+            .acquire()
+            .await
+            .into_report()
+            .change_context(AppError)?;
+
+        let logs = sqlx::query_as!(
+            Log,
+            r#"
+            SELECT
+                id,
+                user_agent,
+                response_time,
+                timestamp
+            FROM
+                logs
+            WHERE
+                timestamp >= COALESCE($1, timestamp)
+                AND
+                timestamp <= COALESCE($2, timestamp)
+            "#,
+            from,
+            until
+        )
+        .fetch_all(&mut conn)
+        .await
+        .into_report()
+        .change_context(AppError)?;
+
+        Ok(logs)
+    }
+}

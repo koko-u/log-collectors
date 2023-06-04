@@ -29,8 +29,8 @@ async fn main() -> error_stack::Result<(), AppError> {
                 middleware::TrailingSlash::Trim,
             ))
             .app_data(app_state.clone())
-            .configure(csv_scope)
-            .configure(logs_scope)
+            .configure(csv_scope::<DbState>)
+            .configure(logs_scope::<DbState>)
     })
     .bind(addr)
     .into_report()
