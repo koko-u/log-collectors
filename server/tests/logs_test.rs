@@ -29,10 +29,6 @@ impl<'a> Fixture<'a> {
             .block_on(PgPool::connect(&url))
             .expect("PgPool::connect(url)");
 
-        let mut conn = r.block_on(pool.acquire()).expect("acquire connection");
-        r.block_on(sqlx::query!("DELETE FROM logs").execute(&mut conn))
-            .expect("delete logs");
-
         Self {
             runtime: r,
             db_state: web::Data::new(pool.into()),
@@ -43,10 +39,6 @@ impl<'a> Fixture<'a> {
             .runtime
             .block_on(self.db_state.acquire())
             .expect("aquire connection");
-
-        self.runtime
-            .block_on(sqlx::query!("DELETE FROM logs").execute(&mut conn))
-            .expect("delete logs");
 
         for log in logs {
             self.runtime
