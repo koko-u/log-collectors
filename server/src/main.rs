@@ -4,9 +4,9 @@ use error_stack::{IntoReport, ResultExt};
 use server::{
     errors::AppError,
     scopes::{csv::csv_scope, logs::logs_scope},
-    states::AppState,
+    states::DbState,
 };
-use std::net;
+use std::{env, net};
 
 #[actix_web::main]
 async fn main() -> error_stack::Result<(), AppError> {
@@ -16,7 +16,11 @@ async fn main() -> error_stack::Result<(), AppError> {
     let addr = net::SocketAddr::from(([127, 0, 0, 1], 3000));
     log::info!("Listening on {addr:?}");
 
-    let app_state = web::Data::new(AppState::new());
+    let database_url = env::var("DATABASE_URL")
+        .into_report()
+        .change_context(AppError)?;
+    let db_state = DbState::new(&database_url).await?;
+    let app_state = web::Data::new(db_state);
 
     HttpServer::new(move || {
         App::new()
