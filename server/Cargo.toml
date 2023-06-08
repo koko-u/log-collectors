@@ -7,17 +7,23 @@ authors.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-multipart.workspace = true
 actix-web.workspace = true
-log.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+csv.workspace = true
+derive_more.workspace = true
+dotenv.workspace = true
 env_logger.workspace = true
 error-stack.workspace = true
-derive_more.workspace = true
-todo.workspace = true
-dotenv.workspace = true
-chrono.workspace = true
+futures-util.workspace = true
+itertools.workspace = true
+log.workspace = true
+mime.workspace = true
 sqlx.workspace = true
+tempfile.workspace = true
+todo.workspace = true
 uuid.workspace = true
-async-trait.workspace = true
 
 api = { path = "../api" }
 

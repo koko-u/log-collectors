@@ -1,3 +1,5 @@
+use std::path;
+
 use async_trait::async_trait;
 use chrono::DateTime;
 use chrono::Utc;
@@ -22,4 +24,8 @@ pub trait DbTrait {
         from: Option<DateTime<Utc>>,
         until: Option<DateTime<Utc>>,
     ) -> error_stack::Result<Vec<Log>, AppError>;
+
+    async fn load_file<P>(&self, file_path: P) -> error_stack::Result<u64, AppError>
+    where
+        P: AsRef<path::Path> + Send;
 }

@@ -13,7 +13,13 @@ Content-Type: application/json
 ### GET /csv
 GET http://localhost:3000/csv
 
-### POST /logs
+### POST /csv
 POST http://localhost:3000/csv
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="a.csv"
+Content-Type: text/csv
+
+< ./test-logs.csv
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

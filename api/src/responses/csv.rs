@@ -5,4 +5,4 @@ use serde::Serialize;
     Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, derive_more::Display,
 )]
 #[display(fmt = "CSV Response [{} bytes]", _0)]
-pub struct CsvResponse(pub usize);
+pub struct CsvResponse(pub u64);

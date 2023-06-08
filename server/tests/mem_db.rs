@@ -1,3 +1,4 @@
+use std::io;
 use std::sync::Arc;
 use std::sync::RwLock;
 
@@ -65,5 +66,12 @@ impl DbTrait for MemDb {
             .collect::<Vec<_>>();
 
         Ok(logs)
+    }
+
+    async fn load_file<R>(&self, file: R) -> error_stack::Result<u64, AppError>
+    where
+        R: io::Read + Send,
+    {
+        todo::TODO!("load file for test"; Ok(0))
     }
 }
