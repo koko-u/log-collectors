@@ -28,6 +28,7 @@ async fn main() -> error_stack::Result<(), AppError> {
             .wrap(middleware::NormalizePath::new(
                 middleware::TrailingSlash::Trim,
             ))
+            .wrap(middleware::Compress::default())
             .app_data(app_state.clone())
             .configure(csv_scope::<DbState>)
             .configure(logs_scope::<DbState>)

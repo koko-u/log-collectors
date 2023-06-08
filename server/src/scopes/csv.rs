@@ -8,7 +8,9 @@ use actix_web::http;
 use actix_web::web;
 use actix_web::HttpResponse;
 use actix_web::Responder;
+use api::params::DateTimeRange;
 use api::responses::csv::CsvResponse;
+use api::responses::logs::LogResponse;
 use error_stack::IntoReport;
 use error_stack::ResultExt;
 use futures_util::StreamExt;
@@ -58,9 +60,31 @@ async fn post_csv<DB: DbTrait>(
 }
 
 async fn get_csv<DB: DbTrait>(
-    _app_state: web::Data<DB>,
+    app_state: web::Data<DB>,
+    range: web::Query<DateTimeRange>,
 ) -> Result<impl Responder, AppResponseError> {
-    let csv = vec![42_u8, 18_u8];
+    let DateTimeRange { from, until } = range.into_inner();
 
-    todo::TODO!("GET /csv"; Ok(HttpResponse::Ok().insert_header((http::header::CONTENT_TYPE, "text/csv")).body(csv)))
+    let logs = app_state.get_logs(from, until).await?;
+
+    let v = Vec::new();
+    let mut w = csv::WriterBuilder::new().has_headers(false).from_writer(v);
+
+    for log in logs {
+        let log_response = LogResponse {
+            user_agent: log.user_agent,
+            response_time: log.response_time,
+            timestamp: log.timestamp,
+        };
+        w.serialize(log_response)
+            .into_report()
+            .change_context(AppError)?;
+    }
+
+    let csv = w.into_inner().into_report().change_context(AppError)?;
+    let response = HttpResponse::Ok()
+        .insert_header((http::header::CONTENT_TYPE, mime::TEXT_CSV_UTF_8))
+        .body(csv);
+
+    Ok(response)
 }
