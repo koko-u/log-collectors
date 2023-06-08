@@ -3,17 +3,19 @@ use std::io;
 use std::path;
 use std::sync::RwLock;
 
-use api::requests::logs::NewLog;
 use async_trait::async_trait;
 use chrono::DateTime;
 use chrono::SubsecRound;
 use chrono::Utc;
 use error_stack::IntoReport;
 use error_stack::ResultExt;
+use uuid::Uuid;
+
 use server::db::DbTrait;
 use server::errors::AppError;
 use server::models::logs::Log;
-use uuid::Uuid;
+
+use api::requests::logs::NewLog;
 
 #[derive(Debug, Default)]
 pub struct MemDb {

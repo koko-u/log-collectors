@@ -2,7 +2,6 @@ use std::fs;
 use std::io;
 use std::path;
 
-use api::requests::logs::NewLog;
 use async_trait::async_trait;
 use chrono::DateTime;
 use chrono::SubsecRound;
@@ -13,11 +12,12 @@ use sqlx::pool::PoolConnection;
 use sqlx::Postgres;
 use uuid::Uuid;
 
+use crate::db::DbTrait;
 use crate::errors::AppError;
 use crate::models::logs::Log;
 use crate::states::DbState;
 
-use super::DbTrait;
+use api::requests::logs::NewLog;
 
 #[async_trait]
 impl DbTrait for DbState {

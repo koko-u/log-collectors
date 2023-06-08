@@ -1,8 +1,9 @@
-use api::responses::logs::LogResponse;
 use chrono::DateTime;
 use chrono::Utc;
 use sqlx::FromRow;
 use uuid::Uuid;
+
+use api::responses::logs::LogResponse;
 
 #[derive(Debug, Clone, PartialEq, Eq, FromRow)]
 pub struct Log {

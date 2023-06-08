@@ -1,19 +1,21 @@
 use std::io::Write;
 
-use crate::db::DbTrait;
-use crate::errors::AppError;
-use crate::errors::AppResponseError;
 use actix_multipart::Multipart;
 use actix_web::http;
 use actix_web::web;
 use actix_web::HttpResponse;
 use actix_web::Responder;
-use api::params::DateTimeRange;
-use api::responses::csv::CsvResponse;
-use api::responses::logs::LogResponse;
 use error_stack::IntoReport;
 use error_stack::ResultExt;
 use futures_util::StreamExt;
+
+use crate::db::DbTrait;
+use crate::errors::AppError;
+use crate::errors::AppResponseError;
+
+use api::params::DateTimeRange;
+use api::responses::csv::CsvResponse;
+use api::responses::logs::LogResponse;
 
 pub fn csv_scope<DB: DbTrait + 'static>(cfg: &mut web::ServiceConfig) {
     cfg.service(

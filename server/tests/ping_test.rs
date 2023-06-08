@@ -2,10 +2,12 @@ use actix_web::http;
 use actix_web::test;
 use actix_web::web;
 use actix_web::App;
-use api::requests::logs::NewLog;
 use pretty_assertions::assert_eq;
+
 use server::scopes::csv::csv_scope;
 use server::scopes::logs::logs_scope;
+
+use api::requests::logs::NewLog;
 
 mod mem_db;
 

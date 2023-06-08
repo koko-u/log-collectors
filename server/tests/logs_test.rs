@@ -2,14 +2,16 @@ use actix_web::http;
 use actix_web::test;
 use actix_web::web;
 use actix_web::App;
-use api::requests::logs::NewLog;
-use api::responses::logs::LogResponse;
 use chrono::SubsecRound;
 use chrono::Utc;
 use pretty_assertions::assert_eq;
+use uuid::Uuid;
+
 use server::models::logs::Log;
 use server::scopes::logs::logs_scope;
-use uuid::Uuid;
+
+use api::requests::logs::NewLog;
+use api::responses::logs::LogResponse;
 
 mod mem_db;
 

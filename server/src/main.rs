@@ -1,12 +1,18 @@
-use actix_web::{middleware, web, App, HttpServer};
+use std::env;
+use std::net;
+
+use actix_web::middleware;
+use actix_web::web;
+use actix_web::App;
+use actix_web::HttpServer;
 use env_logger::Env;
-use error_stack::{IntoReport, ResultExt};
-use server::{
-    errors::AppError,
-    scopes::{csv::csv_scope, logs::logs_scope},
-    states::DbState,
-};
-use std::{env, net};
+use error_stack::IntoReport;
+use error_stack::ResultExt;
+
+use server::errors::AppError;
+use server::scopes::csv::csv_scope;
+use server::scopes::logs::logs_scope;
+use server::states::DbState;
 
 #[actix_web::main]
 async fn main() -> error_stack::Result<(), AppError> {
