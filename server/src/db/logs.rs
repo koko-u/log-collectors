@@ -115,9 +115,6 @@ impl DbTrait for DbState {
             .from_reader(reader)
             .into_deserialize::<NewLog>();
 
-        let logs_vec = logs_iter.collect::<Vec<_>>();
-        log::debug!("logs vec: {logs_vec:?}");
-
         let chunk_size = 1000;
 
         // log data
@@ -126,7 +123,7 @@ impl DbTrait for DbState {
         let mut response_time_vec = Vec::with_capacity(chunk_size);
         let mut timestamp_vec = Vec::with_capacity(chunk_size);
 
-        for (index, log) in logs_vec.into_iter().enumerate() {
+        for (index, log) in logs_iter.enumerate() {
             if log.is_err() {
                 // skip error rows
                 log::debug!("csv error: {:?}", log.err());
@@ -134,14 +131,8 @@ impl DbTrait for DbState {
             }
             let log = log.unwrap();
 
-            log::debug!("NewLog: {log:?}");
-
-            // cs 10
-            // idx 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
-            // rem  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-            //
-            //                                 x
-
+            // itertools::chunks が非同期処理に対応していないので、
+            // 時前で 1000 件づつ処理する
             if index % chunk_size == chunk_size - 1 {
                 // update logs table
                 line_count += bulk_insert_logs(
@@ -183,6 +174,36 @@ impl DbTrait for DbState {
     }
 }
 
+// insert multiple logs
+//
+// ログのデータを列ごとに配列にして Postgres に渡す
+//
+// logs: [ {agent 1, 100, 2022-10-07},
+//         {agent 2, 200, 2022-12-10},
+//         {agent 3, 300, 2023-01-21} ]
+//
+// このような「行データ」を
+//
+// user_agents    [agent1, agent 2, agent 3]
+// response_times [100, 200, 300]
+// timestamps     [2022-10-07, 2022-12-10, 2023-01-22]
+//
+// と縦横変換する
+//
+// PostgresSQL の UNNEST 関数は配列を更にテーブルに変換してくれる
+//
+// UNNEST([agent1, agent 2, agent 3], [100, 200, 300], [2022-10-07, 2022-12-10, 2023-01-22])
+// =>
+//           |     |
+// ----------|-----|------------
+//   agent 1 | 100 | 2022-10-07
+//   agent 2 | 200 | 2022-12-10
+//   agent 3 | 300 | 2023-01-22
+//
+// SQL 文の UNNEST に付けた as a(user_agent, response_time, timestamp)
+// は、UNNEST した結果のテーブルに▼別名 a を付けて、その▼テーブル a の列名が user_agent, response_time, timestamp
+// と名前を付けている、という▼意味
+//
 async fn bulk_insert_logs(
     conn: &mut PoolConnection<Postgres>,
     id_vec: &[Uuid],

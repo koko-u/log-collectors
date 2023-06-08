@@ -1,4 +1,4 @@
-use std::io;
+use std::path;
 use std::sync::Arc;
 use std::sync::RwLock;
 
@@ -68,9 +68,9 @@ impl DbTrait for MemDb {
         Ok(logs)
     }
 
-    async fn load_file<R>(&self, file: R) -> error_stack::Result<u64, AppError>
+    async fn load_file<P>(&self, file_path: P) -> error_stack::Result<u64, AppError>
     where
-        R: io::Read + Send,
+        P: AsRef<path::Path> + Send,
     {
         todo::TODO!("load file for test"; Ok(0))
     }

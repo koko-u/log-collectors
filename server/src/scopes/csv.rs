@@ -30,13 +30,6 @@ async fn post_csv<DB: DbTrait>(
     while let Some(field) = multi_part.next().await {
         let mut field = field?;
 
-        log::debug!(
-            "Name: {}, Content-Disposition: {}, Content-Type: {:?}",
-            field.name(),
-            field.content_disposition(),
-            field.content_type()
-        );
-
         if field
             .content_type()
             .is_some_and(|content_type| *content_type == mime::TEXT_CSV)
@@ -47,12 +40,8 @@ async fn post_csv<DB: DbTrait>(
                 .into_report()
                 .change_context(AppError)?;
 
-            log::debug!("tmpfile: {tmpfile:?}");
-
             while let Some(bytes) = field.next().await {
                 let bytes = bytes?;
-
-                log::debug!("{bytes:?}");
 
                 tmpfile
                     .write_all(&bytes)
