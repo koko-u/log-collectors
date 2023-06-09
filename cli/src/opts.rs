@@ -20,10 +20,12 @@ pub enum Command {
     Post,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum, derive_more::Display)]
 pub enum LogFormat {
     /// csv format
+    #[display(fmt = "csv")]
     Csv,
     /// json format
+    #[display(fmt = "json")]
     Json,
 }

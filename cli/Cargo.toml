@@ -7,8 +7,12 @@ authors = { workspace = true }
 
 [dependencies]
 clap = { workspace = true }
+csv = { workspace = true }
+derive_more = { workspace = true }
 dotenv = { workspace = true }
 env_logger = { workspace = true }
 error-stack = { workspace = true }
 log = { workspace = true }
-derive_more = { workspace = true }
+reqwest = { workspace = true }
+
+api = { path = "../api" }
