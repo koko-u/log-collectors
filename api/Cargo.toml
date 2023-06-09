@@ -1,12 +1,11 @@
 [package]
 name = "api"
-version.workspace = true
-edition.workspace = true
-authors.workspace = true
-
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde.workspace = true
-chrono.workspace = true
-derive_more.workspace = true
+chrono = { workspace = true }
+derive_more = { workspace = true }
+serde = { workspace = true }
